@@ -1,32 +1,23 @@
 import random
 import json
+from googlesearch import search
 
 class ChatBot:
-    def __init__(self):
-        self.bot_responses = {}
-        self.load_responses()
+    # ... (existing code)
 
-    def load_responses(self):
-        try:
-            with open("chatbot_responses.json", "r") as f:
-                self.bot_responses = json.load(f)
-        except FileNotFoundError:
-            self.bot_responses = {
-                "how are you": ["I'm good, thank you!", "I'm doing great!", "All good here!"],
-                "what's your name": ["I'm ChatBot.", "You can call me ChatBot.", "I go by the name ChatBot."],
-                "hello": ["Hello!", "Hi there!", "Hey! How can I assist you?"],
-                "bye": ["Goodbye!", "See you later!", "Farewell!"],
-                "tell me a joke": ["Why don't scientists trust atoms? Because they make up everything!", "What do you call fake spaghetti? An impasta!"],
-                "tell me a fact": ["The Earth has more than 80,000 species of edible plants.", "A group of flamingos is called a 'flamboyance'."],
-                "default": ["I'm not sure how to respond to that.", "Could you please rephrase that?", "Sorry, I don't understand."],
-            }
+    def search_on_internet(self, query):
+        search_results = list(search(query, num=3, stop=3, pause=2))
+        if not search_results:
+            return "I couldn't find any relevant information on the internet."
 
-    def save_responses(self):
-        with open("chatbot_responses.json", "w") as f:
-            json.dump(self.bot_responses, f, indent=4)
+        return f"I found some links that might help:\n{chr(10).join(search_results)}"
 
     def get_bot_response(self, user_input):
         user_input = user_input.lower()
+
+        if "" in user_input:
+            query = user_input.replace("search the web for", "").strip()
+            return self.search_on_internet(query)
 
         for question, responses in self.bot_responses.items():
             if question in user_input:
@@ -34,15 +25,10 @@ class ChatBot:
 
         return self.learn_response(user_input)
 
-    def learn_response(self, user_input):
-        new_response = input("ChatBot: I'm not familiar with that. How should I respond? ")
-        self.bot_responses[user_input] = [new_response]
-        self.save_responses()
-        return "Thank you! I'll remember that for next time."
+    # ... (existing code)
 
 def main():
-    chat_bot = ChatBot()
-    print("ChatBot: Hello! How can I assist you today? (Type 'bye' to exit)")
+    # ... (existing code)
 
     while True:
         user_input = input("You: ")
@@ -55,3 +41,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
