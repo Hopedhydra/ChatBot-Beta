@@ -1,1 +1,0 @@
-docker run --rm -it -v "C:\Users\Stephan\OneDrive\Desktop\API/TileServer\:"/data -p 8080:8080 maptiler/tileserver-gl
