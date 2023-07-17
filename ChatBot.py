@@ -1,44 +1,40 @@
-import random
-import json
-from googlesearch import search
+import openai
 
 class ChatBot:
-    # ... (existing code)
+    def __init__(self, api_key):
+        openai.api_key = api_key
 
-    def search_on_internet(self, query):
-        search_results = list(search(query, num=3, stop=3, pause=2))
-        if not search_results:
-            return "I couldn't find any relevant information on the internet."
+    def get_bot_response(self, user_input, chat_history=[]):
+        chat_history.append(user_input)
 
-        return f"I found some links that might help:\n{chr(10).join(search_results)}"
+        response = openai.Completion.create(
+            engine="text-davinci-002",  # You can use other engines depending on your subscription plan.
+            prompt="\n".join(chat_history),
+            temperature=0.7,
+            max_tokens=150,
+            stop=["\n"]
+        )
 
-    def get_bot_response(self, user_input):
-        user_input = user_input.lower()
+        bot_response = response.choices[0].text.strip()
+        chat_history.append(bot_response)
 
-        if "" in user_input:
-            query = user_input.replace("search the web for", "").strip()
-            return self.search_on_internet(query)
-
-        for question, responses in self.bot_responses.items():
-            if question in user_input:
-                return random.choice(responses)
-
-        return self.learn_response(user_input)
-
-    # ... (existing code)
+        return bot_response
 
 def main():
-    # ... (existing code)
+    # Replace 'YOUR_OPENAI_API_KEY' with your actual OpenAI API key
+    api_key = 'YOUR_OPENAI_API_KEY'
+    chat_bot = ChatBot(api_key)
+    print("ChatBot: Hello! How can I assist you today? (Type 'bye' to exit)")
 
+    chat_history = []
     while True:
         user_input = input("You: ")
         if user_input.lower() == "bye":
             print("ChatBot: Goodbye! Have a great day.")
             break
 
-        response = chat_bot.get_bot_response(user_input)
-        print("ChatBot:", response)
+        bot_response = chat_bot.get_bot_response(user_input, chat_history)
+        print("ChatBot:", bot_response)
 
 if __name__ == "__main__":
     main()
-
